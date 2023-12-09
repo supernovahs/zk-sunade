@@ -140,46 +140,6 @@ impl Groth16 {
         })
     }
 
-    // function scalar_mul(G1Point memory p, uint256 s) internal view returns (G1Point memory r) {
-    //     uint256[3] memory input;
-    //     input[0] = p.X;
-    //     input[1] = p.Y;
-    //     input[2] = s;
-    //     bool success;
-    //     // solium-disable-next-line security/no-inline-assembly
-    //     assembly {
-    //         success := staticcall(sub(gas(), 2000), 7, input, 0x80, r, 0x60)
-    //         // Use "invalid" to make gas estimation work
-    //         switch success case 0 { invalid() }
-    //     }
-    //     require(success, "pairing-mul-failed");
-    // }
-    // function negate(G1Point memory p) internal pure returns (G1Point memory) {
-    //     // The prime q in the base field F_q for G1
-    //     if (p.X == 0 && p.Y == 0) {
-    //         return G1Point(0, 0);
-    //     } else {
-    //         return G1Point(p.X, PRIME_Q - (p.Y % PRIME_Q));
-    //     }
-    // }
-
-    // /// Gets the number from storage.
-    // pub fn number(&self) -> Result<U256, Vec<u8>> {
-    //     Ok(self.number.get())
-    // }
-
-    // /// Sets a number in storage to a user-specified value.
-    // pub fn set_number(&mut self, new_number: U256) -> Result<(), Vec<u8>> {
-    //     self.number.set(new_number);
-    //     Ok(())
-    // }
-
-    // /// Increments number and updates it values in storage.
-    // pub fn increment(&mut self) -> Result<(), Vec<u8>> {
-    //     let number = self.number.get();
-    //     self.set_number(number + U256::from(1))
-    // }
-
     #[allow(clippy::too_many_arguments)]
     fn pairing(
         a1: G1Point,
@@ -208,7 +168,7 @@ impl Groth16 {
 
         let calldata = input.map(|i| i.to_be_bytes::<32>()).concat();
         let call_result = RawCall::new_static().gas(u64::MAX).call(
-            address!("0000000000000000000000000000000000000006"),
+            address!("0000000000000000000000000000000000000008"),
             &calldata,
         );
         if call_result.is_err() {
