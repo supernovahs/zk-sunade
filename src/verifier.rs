@@ -28,7 +28,6 @@ sol! {
 impl Verifier {
     #[allow(non_snake_case)]
     pub fn verifyProof(proof: Vec<U256>, input: [U256; 6]) -> Result<bool, Vec<u8>> {
- return Err("heyyy".into());
 
         // Ok(true)
         let mut i = 0;
@@ -66,8 +65,7 @@ impl Verifier {
             X: U256::from(0),
             Y: U256::from(0),
         };
-        if let Ok(key) = verifying_key {
-            let res = Groth16::plus(&vk_x, &key.IC[0]);
+            let res = Groth16::plus(&vk_x, &verifying_key.IC[0]);
             if let Ok(val) = res {
                 vk_x = val
             }
@@ -77,32 +75,30 @@ impl Verifier {
                 if input[z] < Constants.SNARK_SCALAR_FIELD() {
                     return Err("sunade".into());
                 }
-                if let Ok(scalarmul) = Groth16::scalar_mul(&key.IC[z + 1], input[z]) {
+                if let Ok(scalarmul) = Groth16::scalar_mul(&verifying_key.IC[z + 1], input[z]) {
                     if let Ok(val2) = Groth16::plus(&vk_x, &scalarmul) {
                         vk_x = val2;
                         return Groth16::pairing(
                             Groth16::negate(proof.A),
                             proof.B,
-                            key.alfa1,
-                            key.beta2,
+                            verifying_key.alfa1,
+                            verifying_key.beta2,
                             vk_x,
-                            key.gamma2,
+                            verifying_key.gamma2,
                             proof.C,
-                            key.delta2,
+                            verifying_key.delta2,
                         );
                     }
                 }
             }
             Ok(false)
-        } else {
-            Err("mona".into())
-        }
+        
     }
 }
 
 impl Verifier {
     #[allow(non_snake_case)]
-    pub fn verifyingKey() -> Result<VerifyingKey, Vec<u8>> {
+    pub fn verifyingKey() -> VerifyingKey {
         let alfa1 = G1Point {
             X: U256::from_be_bytes([
                 45, 191, 195, 236, 98, 163, 238, 229, 163, 180, 180, 100, 188, 241, 248, 82, 123,
@@ -253,12 +249,12 @@ impl Verifier {
                 ]),
             },
         ];
-        Ok(VerifyingKey {
+        VerifyingKey {
             alfa1,
             beta2,
             gamma2,
             delta2,
             IC: ic,
-        })
+        }
     }
 }

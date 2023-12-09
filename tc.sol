@@ -335,10 +335,10 @@ contract Verifier {
         // _proof.B = Pairing.G2Point([p[2], p[3]], [p[4], p[5]]);
         // _proof.C = Pairing.G1Point(p[6], p[7]);
 
-        VerifyingKey memory vk = verifyingKey();
+        // VerifyingKey memory vk = verifyingKey();
 
         // Compute the linear combination vk_x
-        Pairing.G1Point memory vk_x = Pairing.G1Point(0, 0);
+        // Pairing.G1Point memory vk_x = Pairing.G1Point(0, 0);
         vk_x = Pairing.plus(vk_x, vk.IC[0]);
 
         // Make sure that every input is less than the snark scalar field
