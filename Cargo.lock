@@ -2962,20 +2962,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "stylus-hello-world"
-version = "0.1.5"
-dependencies = [
- "alloy-primitives",
- "alloy-sol-types",
- "ethers",
- "eyre",
- "hex",
- "stylus-sdk",
- "tokio",
- "wee_alloc",
-]
-
-[[package]]
 name = "stylus-proc"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3775,6 +3761,20 @@ dependencies = [
  "sha1",
  "time",
  "zstd",
+]
+
+[[package]]
+name = "zk-sunade"
+version = "0.1.5"
+dependencies = [
+ "alloy-primitives",
+ "alloy-sol-types",
+ "ethers",
+ "eyre",
+ "hex",
+ "stylus-sdk",
+ "tokio",
+ "wee_alloc",
 ]
 
 [[package]]
