@@ -118,9 +118,23 @@ impl Groth16 {
         })
     }
 
-    // fn scalar_mul(p1:G1Point,s:U256) -> Result<G1Point,Vec<u8>>{
-    //     // let input:[U256;3] = 
-    // }
+    fn scalar_mul(p1:G1Point,s:U256) -> Result<G1Point,Vec<u8>>{
+        let calldata= [p1.X,p1.Y,s].map(|i| i.to_be_bytes::<32>()).concat();
+        // let calldata = ;
+        let call_result = RawCall::new_static().gas(u64::MAX).call(
+            address!("0000000000000000000000000000000000000007"),
+            &calldata
+        );
+        
+        if call_result.is_err(){
+            return Err(call_result.err().unwrap());
+        }
+
+        let returndata = call_result.unwrap();
+        Ok(G1Point{X: U256::from_be_bytes::<32>(returndata[0..32].try_into().unwrap()),
+            Y: U256::from_be_bytes::<32>(returndata[32..64].try_into().unwrap()),
+        })
+    }
 
     // function scalar_mul(G1Point memory p, uint256 s) internal view returns (G1Point memory r) {
     //     uint256[3] memory input;
