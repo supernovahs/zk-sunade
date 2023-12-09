@@ -11,7 +11,6 @@ sol_storage! {
 }
 
 sol! {
-    #[derive(Copy)]
     struct G1Point {
         uint256 X;
         uint256 Y;
@@ -39,7 +38,7 @@ impl Groth16 {
         }
     }
 
-    pub fn plus(p1: G1Point, p2: G1Point) -> Result<G1Point, Vec<u8>> {
+    pub fn plus(p1: &G1Point, p2: &G1Point) -> Result<G1Point, Vec<u8>> {
         let calldata = [p1.X, p1.Y, p2.X, p2.Y]
             .map(|i| i.to_be_bytes::<32>())
             .concat();
@@ -57,7 +56,7 @@ impl Groth16 {
         })
     }
 
-    pub fn scalar_mul(p1: G1Point, s: U256) -> Result<G1Point, Vec<u8>> {
+    pub fn scalar_mul(p1: &G1Point, s: U256) -> Result<G1Point, Vec<u8>> {
         let calldata = [p1.X, p1.Y, s].map(|i| i.to_be_bytes::<32>()).concat();
         // let calldata = ;
         let call_result = RawCall::new_static().gas(u64::MAX).call(
