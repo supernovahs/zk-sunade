@@ -1,10 +1,7 @@
-pub use crate::constants::{ConstantParams, Constants};
+use crate::constants::{ConstantParams, Constants};
+use alloy_primitives::Address;
 use alloy_sol_types::sol;
-use stylus_sdk::{
-    alloy_primitives::{address, U256},
-    call::RawCall,
-    prelude::*,
-};
+use stylus_sdk::{alloy_primitives::U256, call::RawCall, prelude::*};
 
 sol_storage! {
     pub struct Groth16 {}
@@ -43,7 +40,7 @@ impl Groth16 {
             .map(|i| i.to_be_bytes::<32>())
             .concat();
         let call_result = RawCall::new_static().gas(u64::MAX).call(
-            address!("0000000000000000000000000000000000000006"),
+            Address::from([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6]),
             &calldata,
         );
         if call_result.is_err() {
@@ -60,7 +57,7 @@ impl Groth16 {
         let calldata = [p1.X, p1.Y, s].map(|i| i.to_be_bytes::<32>()).concat();
         // let calldata = ;
         let call_result = RawCall::new_static().gas(u64::MAX).call(
-            address!("0000000000000000000000000000000000000007"),
+            Address::from([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7]),
             &calldata,
         );
 
@@ -103,7 +100,7 @@ impl Groth16 {
 
         let calldata = input.map(|i| i.to_be_bytes::<32>()).concat();
         let call_result = RawCall::new_static().gas(u64::MAX).call(
-            address!("0000000000000000000000000000000000000008"),
+            Address::from([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8]),
             &calldata,
         );
         if call_result.is_err() {
