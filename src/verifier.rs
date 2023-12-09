@@ -52,7 +52,7 @@ impl Verifier {
             },
         };
 
-        let verifying_key = Verifier::verifyingKey();
+        let verifying_key = Verifier::verifyingKey()?;
 
         let vk_x = G1Point {
             X: U256::from(0),
@@ -85,7 +85,7 @@ impl Verifier {
 
 impl Verifier {
     #[allow(non_snake_case)]
-    pub fn verifyingKey() -> VerifyingKey {
+    pub fn verifyingKey() -> Result<VerifyingKey, Vec<u8>> {
         let alfa1 = G1Point {
             X: U256::from_be_bytes([
                 45, 191, 195, 236, 98, 163, 238, 229, 163, 180, 180, 100, 188, 241, 248, 82, 123,
@@ -236,12 +236,12 @@ impl Verifier {
                 ]),
             },
         ];
-        VerifyingKey {
+        Ok(VerifyingKey {
             alfa1,
             beta2,
             gamma2,
             delta2,
             IC: ic,
-        }
+        })
     }
 }
