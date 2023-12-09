@@ -44,7 +44,7 @@ impl Groth16 {
             &calldata,
         );
         if call_result.is_err() {
-            return Err(call_result.err().unwrap());
+            return Err("plus 1 ".into());
         }
         let returndata = call_result.unwrap();
         Ok(G1Point {
@@ -62,7 +62,7 @@ impl Groth16 {
         );
 
         if call_result.is_err() {
-            return Err(call_result.err().unwrap());
+            return Err("scalar mul".into());
         }
 
         let returndata = call_result.unwrap();
@@ -104,7 +104,7 @@ impl Groth16 {
             &calldata,
         );
         if call_result.is_err() {
-            return Err("pairing-opcode-failed".as_bytes().to_vec());
+            return Err("pairing-opcode-failed".into());
         }
         let returndata = call_result.unwrap();
         let len = U256::from_be_bytes::<32>(returndata[0..32].try_into().unwrap());
