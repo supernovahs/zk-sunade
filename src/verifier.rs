@@ -64,7 +64,7 @@ impl Verifier {
 
         #[allow(clippy::needless_range_loop)]
         for z in 0..6 {
-            if input[z] < Constants.SNARK_SCALAR_FIELD() {
+            if input[z] >= Constants.SNARK_SCALAR_FIELD() {
                 return Err("sunade".into());
             }
             let scalarmul = Groth16::scalar_mul(&verifying_key.IC[z + 1], input[z])?;
