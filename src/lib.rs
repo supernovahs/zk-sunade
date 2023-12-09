@@ -1,48 +1,26 @@
-//! Implements a hello-world example for Arbitrum Stylus, providing a Solidity ABI-equivalent
-//! Rust implementation of the Counter contract example provided by Foundry.
-//! Warning: this code is a template only and has not been audited.
-//! ```
-//! contract Counter {
-//!     uint256 public number;
-//!     function setNumber(uint256 newNumber) public {
-//!         number = newNumber;
-//!     }
-//!     function increment() public {
-//!         number++;
-//!     }
-//! }
-//! ```
-
 // Only run this as a WASM if the export-abi feature is not set.
 #![cfg_attr(not(feature = "export-abi"), no_main)]
 extern crate alloc;
 
+mod constants;
+
 /// Initializes a custom, global allocator for Rust programs compiled to WASM.
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+
 use alloy_sol_types::sol;
-use stylus_sdk::abi::AbiType;
-use stylus_sdk::call::RawCall;
-/// Import the Stylus SDK along with alloy primitive types for use in our program.
+use constants::{ConstantParams, Constants};
 use stylus_sdk::{
-    alloy_primitives::{address, Bytes, FixedBytes, U256},
+    alloy_primitives::{address, U256},
+    call::RawCall,
     prelude::*,
 };
 
-// Define the entrypoint as a Solidity storage object, in this case a struct
-// called `Counter` with a single uint256 value called `number`. The sol_storage! macro
-// will generate Rust-equivalent structs with all fields mapped to Solidity-equivalent
-// storage slots and types.
 sol_storage! {
     #[entrypoint]
     pub struct Verifier {}
 
     pub struct Groth16 {}
-}
-
-pub trait ConstantParams {
-    fn PRIME_Q(self) -> U256;
-    fn SNARK_SCALAR_FIELD(self) -> U256;
 }
 
 sol! {
@@ -58,36 +36,14 @@ sol! {
     }
 }
 
-// impl  AbiType for G1Point{
-
-// }
-
-struct Constants;
-
-impl ConstantParams for Constants {
-    fn PRIME_Q(self) -> U256 {
-        "21888242871839275222246405745257275088696311157297823662689037894645226208583"
-            .parse()
-            .unwrap()
-    }
-
-    fn SNARK_SCALAR_FIELD(self) -> U256 {
-        "21888242871839275222246405745257275088548364400416034343698204186575808495617"
-            .parse()
-            .unwrap()
-    }
-}
-
 #[external]
 impl Verifier {
-    fn verifyProof() -> Result<(), Vec<u8>> {
-        Ok(todo!())
+    #[allow(non_snake_case)]
+    pub fn verifyProof() -> Result<(), Vec<u8>> {
+        todo!()
     }
 }
 
-// let primt_q:U256 ="21888242871839275222246405745257275088696311157297823662689037894645226208583".parse().unwrap();
-/// Define an implementation of the generated Counter struct, defining a set_number
-/// and increment method using the features of the Stylus SDK.
 impl Groth16 {
     pub fn negate(p: G1Point) -> G1Point {
         if p.X == U256::ZERO && p.Y == U256::ZERO {
@@ -103,7 +59,7 @@ impl Groth16 {
         }
     }
 
-    fn plus(p1: G1Point, p2: G1Point) -> Result<G1Point, Vec<u8>> {
+    pub fn plus(p1: G1Point, p2: G1Point) -> Result<G1Point, Vec<u8>> {
         let calldata = [p1.X, p1.Y, p2.X, p2.Y]
             .map(|i| i.to_be_bytes::<32>())
             .concat();
@@ -121,7 +77,7 @@ impl Groth16 {
         })
     }
 
-    fn scalar_mul(p1: G1Point, s: U256) -> Result<G1Point, Vec<u8>> {
+    pub fn scalar_mul(p1: G1Point, s: U256) -> Result<G1Point, Vec<u8>> {
         let calldata = [p1.X, p1.Y, s].map(|i| i.to_be_bytes::<32>()).concat();
         // let calldata = ;
         let call_result = RawCall::new_static().gas(u64::MAX).call(
@@ -141,7 +97,7 @@ impl Groth16 {
     }
 
     #[allow(clippy::too_many_arguments)]
-    fn pairing(
+    pub fn pairing(
         a1: G1Point,
         a2: G2Point,
         b1: G1Point,
