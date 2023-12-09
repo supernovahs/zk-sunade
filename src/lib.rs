@@ -89,18 +89,18 @@ impl Verifier {
 /// Define an implementation of the generated Counter struct, defining a set_number
 /// and increment method using the features of the Stylus SDK.
 impl Groth16 {
-    pub fn negate(x: U256, y: U256) -> Result<U256, Vec<u8>> {
-        let p = G1Point { X: x, Y: y };
-
-        if p.X == U256::from(0) && p.Y == U256::from(0) {
-            (G1Point {
-                X: U256::from(0),
-                Y: U256::from(0),
-            });
+    pub fn negate(p: G1Point) -> G1Point {
+        if p.X == U256::ZERO && p.Y == U256::ZERO {
+            G1Point {
+                X: U256::ZERO,
+                Y: U256::ZERO,
+            }
         } else {
-            (p.X, Constants.PRIME_Q() - (p.Y % Constants.PRIME_Q()));
+            G1Point {
+                X: p.X,
+                Y: Constants.PRIME_Q() - (p.Y % Constants.PRIME_Q()),
+            }
         }
-        Ok(p.X)
     }
 
     fn plus(p1: G1Point, p2: G1Point) -> Result<G1Point, Vec<u8>> {
