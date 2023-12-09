@@ -35,13 +35,9 @@ use stylus_sdk::{
 // storage slots and types.
 sol_storage! {
     #[entrypoint]
-    pub struct Verifier{
+    pub struct Verifier {}
 
-    }
-
-    pub struct Groth16{
-
-    }
+    pub struct Groth16 {}
 }
 
 pub trait ConstantParams {
@@ -76,7 +72,9 @@ impl ConstantParams for Constants {
     }
 
     fn SNARK_SCALAR_FIELD(self) -> U256 {
-        "21888242871839275222246405745257275088548364400416034343698204186575808495617".parse().unwrap()
+        "21888242871839275222246405745257275088548364400416034343698204186575808495617"
+            .parse()
+            .unwrap()
     }
 }
 
@@ -123,20 +121,21 @@ impl Groth16 {
         })
     }
 
-    fn scalar_mul(p1:G1Point,s:U256) -> Result<G1Point,Vec<u8>>{
-        let calldata= [p1.X,p1.Y,s].map(|i| i.to_be_bytes::<32>()).concat();
+    fn scalar_mul(p1: G1Point, s: U256) -> Result<G1Point, Vec<u8>> {
+        let calldata = [p1.X, p1.Y, s].map(|i| i.to_be_bytes::<32>()).concat();
         // let calldata = ;
         let call_result = RawCall::new_static().gas(u64::MAX).call(
             address!("0000000000000000000000000000000000000007"),
-            &calldata
+            &calldata,
         );
-        
-        if call_result.is_err(){
+
+        if call_result.is_err() {
             return Err(call_result.err().unwrap());
         }
 
         let returndata = call_result.unwrap();
-        Ok(G1Point{X: U256::from_be_bytes::<32>(returndata[0..32].try_into().unwrap()),
+        Ok(G1Point {
+            X: U256::from_be_bytes::<32>(returndata[0..32].try_into().unwrap()),
             Y: U256::from_be_bytes::<32>(returndata[32..64].try_into().unwrap()),
         })
     }
@@ -180,4 +179,43 @@ impl Groth16 {
     //     let number = self.number.get();
     //     self.set_number(number + U256::from(1))
     // }
+
+    #[allow(clippy::too_many_arguments)]
+    fn pairing(
+        a1: G1Point,
+        a2: G2Point,
+        b1: G1Point,
+        b2: G2Point,
+        c1: G1Point,
+        c2: G2Point,
+        d1: G1Point,
+        d2: G2Point,
+    ) -> Result<bool, Vec<u8>> {
+        let p1 = [a1, b1, c1, d1];
+        let p2 = [a2, b2, c2, d2];
+
+        let mut input = [U256::ZERO; 24];
+
+        for i in 0..4 {
+            let j = i * 6;
+            input[j] = p1[i].X;
+            input[j + 1] = p1[i].Y;
+            input[j + 2] = p2[i].X[0];
+            input[j + 3] = p2[i].X[1];
+            input[j + 4] = p2[i].Y[0];
+            input[j + 5] = p2[i].Y[1];
+        }
+
+        let calldata = input.map(|i| i.to_be_bytes::<32>()).concat();
+        let call_result = RawCall::new_static().gas(u64::MAX).call(
+            address!("0000000000000000000000000000000000000006"),
+            &calldata,
+        );
+        if call_result.is_err() {
+            return Err("pairing-opcode-failed".as_bytes().to_vec());
+        }
+        let returndata = call_result.unwrap();
+        let len = U256::from_be_bytes::<32>(returndata[0..32].try_into().unwrap());
+        Ok(len != U256::from(0))
+    }
 }
