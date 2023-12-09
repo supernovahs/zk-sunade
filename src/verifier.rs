@@ -1,8 +1,8 @@
-use crate::groth_16::{G1Point, G2Point, Groth16};
+use crate::groth_16::{G1Point, G2Point, Groth16, self};
 use alloy_primitives::U256;
 use alloy_sol_types::sol;
 use stylus_sdk::prelude::*;
-
+use crate::constants::ConstantParams;
 sol_storage! {
     #[entrypoint]
     pub struct Verifier {}
@@ -28,6 +28,21 @@ sol! {
 impl Verifier {
     #[allow(non_snake_case)]
     pub fn verifyProof(proof: Vec<u8>, input: [U256; 6]) -> Result<(), Vec<u8>> {
+        // // Make sure that each element in the proof is less than the prime q
+        // for (uint8 i = 0; i < p.length; i++) {
+        //     require(p[i] < PRIME_Q, "verifier-proof-element-gte-prime-q");
+        // }
+        let mut i = 0;
+        let mut next = 0x00;
+        while i < 8 {
+            assert!(U256::from_be_bytes::<32>(proof[next..(next + 0x20)].try_into().unwrap()) < groth_16::Constants.PRIME_Q());
+            next = next + 0x20; 
+            i +=1;
+        }
+
+        let proof = Proof{A : G1Point{X: }}
+
+
         let p = [
             U256::from_be_bytes::<32>(proof[0..0x20].try_into().unwrap()),
             U256::from_be_bytes::<32>(proof[0x20..0x40].try_into().unwrap()),
