@@ -322,17 +322,18 @@ contract Verifier {
         bytes memory proof,
         uint256[6] memory input
     ) public view returns (bool) {
-        uint256[8] memory p = abi.decode(proof, (uint256[8]));
+
+        // uint256[8] memory p = abi.decode(proof, (uint256[8]));
 
         // Make sure that each element in the proof is less than the prime q
-        for (uint8 i = 0; i < p.length; i++) {
-            require(p[i] < PRIME_Q, "verifier-proof-element-gte-prime-q");
-        }
+        // for (uint8 i = 0; i < p.length; i++) {
+        //     require(p[i] < PRIME_Q, "verifier-proof-element-gte-prime-q");
+        // }
 
-        Proof memory _proof;
-        _proof.A = Pairing.G1Point(p[0], p[1]);
-        _proof.B = Pairing.G2Point([p[2], p[3]], [p[4], p[5]]);
-        _proof.C = Pairing.G1Point(p[6], p[7]);
+        // Proof memory _proof;
+        // _proof.A = Pairing.G1Point(p[0], p[1]);
+        // _proof.B = Pairing.G2Point([p[2], p[3]], [p[4], p[5]]);
+        // _proof.C = Pairing.G1Point(p[6], p[7]);
 
         VerifyingKey memory vk = verifyingKey();
 

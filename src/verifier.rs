@@ -27,37 +27,37 @@ sol! {
 #[external]
 impl Verifier {
     #[allow(non_snake_case)]
-    pub fn verifyProof(proof: Vec<u8>, input: [U256; 6]) -> Result<bool, Vec<u8>> {
+    pub fn verifyProof(proof: Vec<U256>, input: [U256; 6]) -> Result<bool, Vec<u8>> {
+ return Err("heyyy".into());
+
+        // Ok(true)
         let mut i = 0;
-        let mut next = 0x00;
         while i < 8 {
-            if U256::from_be_bytes::<32>(proof[next..(next + 0x20)].try_into().unwrap())
-                >= Constants.PRIME_Q()
+            if proof[i]  >= Constants.PRIME_Q()
             {
-                return Err("v".into());
+                return Err("first verify".into());
             }
-            next += 0x20;
             i += 1;
         }
 
         let proof = Proof {
             A: G1Point {
-                X: U256::from_be_bytes::<32>(proof[0..0x20].try_into().unwrap()),
-                Y: U256::from_be_bytes::<32>(proof[0x20..0x40].try_into().unwrap()),
+                X: proof[0],
+                Y: proof[1],
             },
             B: G2Point {
                 X: [
-                    U256::from_be_bytes::<32>(proof[0x40..0x60].try_into().unwrap()),
-                    U256::from_be_bytes::<32>(proof[0x60..0x80].try_into().unwrap()),
+                    proof[2],
+                    proof[3],
                 ],
                 Y: [
-                    U256::from_be_bytes::<32>(proof[0x80..0xA0].try_into().unwrap()),
-                    U256::from_be_bytes::<32>(proof[0xA0..0xC0].try_into().unwrap()),
+                   proof[4],
+                   proof[5],
                 ],
             },
             C: G1Point {
-                X: U256::from_be_bytes::<32>(proof[0xC0..0xE0].try_into().unwrap()),
-                Y: U256::from_be_bytes::<32>(proof[0xE0..0x100].try_into().unwrap()),
+                X:proof[6],
+                Y:proof[7],
             },
         };
 
@@ -75,7 +75,7 @@ impl Verifier {
             #[allow(clippy::needless_range_loop)]
             for z in 0..6 {
                 if input[z] < Constants.SNARK_SCALAR_FIELD() {
-                    return Err("v".into());
+                    return Err("sunade".into());
                 }
                 if let Ok(scalarmul) = Groth16::scalar_mul(&key.IC[z + 1], input[z]) {
                     if let Ok(val2) = Groth16::plus(&vk_x, &scalarmul) {
@@ -95,7 +95,7 @@ impl Verifier {
             }
             Ok(false)
         } else {
-            Err("C".into())
+            Err("mona".into())
         }
     }
 }
