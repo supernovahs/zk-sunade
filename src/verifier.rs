@@ -27,8 +27,10 @@ sol! {
 #[external]
 impl Verifier {
     #[allow(non_snake_case)]
-    pub fn verifyProof(proof: Vec<U256>, input: [U256; 6]) -> Result<bool, Vec<u8>> {
-        // Ok(true)
+    pub fn verifyProof(words: [U256; 14]) -> Result<bool, Vec<u8>> {
+        let proof: [U256; 8] = words[0..8].try_into().unwrap();
+        let input: [U256; 6] = words[8..14].try_into().unwrap();
+
         let mut i = 0;
         while i < 8 {
             if proof[i] >= Constants.PRIME_Q() {
