@@ -28,12 +28,10 @@ sol! {
 impl Verifier {
     #[allow(non_snake_case)]
     pub fn verifyProof(proof: Vec<U256>, input: [U256; 6]) -> Result<bool, Vec<u8>> {
-
         // Ok(true)
         let mut i = 0;
         while i < 8 {
-            if proof[i]  >= Constants.PRIME_Q()
-            {
+            if proof[i] >= Constants.PRIME_Q() {
                 return Err("first verify".into());
             }
             i += 1;
@@ -45,54 +43,43 @@ impl Verifier {
                 Y: proof[1],
             },
             B: G2Point {
-                X: [
-                    proof[2],
-                    proof[3],
-                ],
-                Y: [
-                   proof[4],
-                   proof[5],
-                ],
+                X: [proof[2], proof[3]],
+                Y: [proof[4], proof[5]],
             },
             C: G1Point {
-                X:proof[6],
-                Y:proof[7],
+                X: proof[6],
+                Y: proof[7],
             },
         };
 
         let verifying_key = Verifier::verifyingKey();
-        let mut vk_x = G1Point {
+
+        let vk_x = G1Point {
             X: U256::from(0),
             Y: U256::from(0),
         };
-            let res = Groth16::plus(&vk_x, &verifying_key.IC[0]);
-            if let Ok(val) = res {
-                vk_x = val
-            }
+        let mut vk_x = Groth16::plus(&vk_x, &verifying_key.IC[0])?;
 
-            #[allow(clippy::needless_range_loop)]
-            for z in 0..6 {
-                if input[z] < Constants.SNARK_SCALAR_FIELD() {
-                    return Err("sunade".into());
-                }
-                if let Ok(scalarmul) = Groth16::scalar_mul(&verifying_key.IC[z + 1], input[z]) {
-                    if let Ok(val2) = Groth16::plus(&vk_x, &scalarmul) {
-                        vk_x = val2;
-                        return Groth16::pairing(
-                            Groth16::negate(proof.A),
-                            proof.B,
-                            verifying_key.alfa1,
-                            verifying_key.beta2,
-                            vk_x,
-                            verifying_key.gamma2,
-                            proof.C,
-                            verifying_key.delta2,
-                        );
-                    }
-                }
+        #[allow(clippy::needless_range_loop)]
+        for z in 0..6 {
+            if input[z] < Constants.SNARK_SCALAR_FIELD() {
+                return Err("sunade".into());
             }
-            Ok(false)
-        
+            let scalarmul = Groth16::scalar_mul(&verifying_key.IC[z + 1], input[z])?;
+            let val2 = Groth16::plus(&vk_x, &scalarmul)?;
+            vk_x = val2;
+        }
+
+        Groth16::pairing(
+            Groth16::negate(proof.A),
+            proof.B,
+            verifying_key.alfa1,
+            verifying_key.beta2,
+            vk_x,
+            verifying_key.gamma2,
+            proof.C,
+            verifying_key.delta2,
+        )
     }
 }
 
