@@ -1,5 +1,8 @@
-# Zk-Sunade
-## This is an optimized , hand written Groth16 implementation in Rust using Arbitrum's Stylus [SDK](https://docs.arbitrum.io/stylus/stylus-quickstart).
+![sunade](https://github.com/supernovahs/zk-sunade/assets/22412996/363788bb-36bb-4593-bc7a-683c17de46e3)
+
+# zk-sunade
+
+This is an optimized , hand written Groth16 implementation in Rust using Arbitrum's Stylus [SDK](https://docs.arbitrum.io/stylus/stylus-quickstart).
 
 
 ## Features
